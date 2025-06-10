@@ -14,13 +14,15 @@ The API is designed with clean separation of concerns and a flexible architectur
 
 The API is live and available here:
 
-  Base URL: [https://aircanada-partner-integration.onrender.com](https://aircanada-partner-integration.onrender.com)
+👉 Base URL: [https://aircanada-partner-integration.onrender.com](https://aircanada-partner-integration.onrender.com)
 
 ### Endpoints
 
-- [`/flightRoutes`](https://aircanada-partner-integration.onrender.com/flightRoutes)
-- [`/flightRoutesWithHotels`](https://aircanada-partner-integration.onrender.com/flightRoutesWithHotels)
-- [`/api-docs`](https://aircanada-partner-integration.onrender.com/api-docs) → Swagger API documentation
+- [`GET https://aircanada-partner-integration.onrender.com/flightRoutes`](https://aircanada-partner-integration.onrender.com/flightRoutes)
+- [`GET https://aircanada-partner-integration.onrender.com/flightRoutesWithHotels`](https://aircanada-partner-integration.onrender.com/flightRoutesWithHotels)
+- [`GET https://aircanada-partner-integration.onrender.com/health`](https://aircanada-partner-integration.onrender.com/health) → Health check
+- [`https://aircanada-partner-integration.onrender.com/api-docs`](https://aircanada-partner-integration.onrender.com/api-docs) → Swagger API documentation
+
 
 ---
 
@@ -39,56 +41,24 @@ The goal was to implement an API that is:
 
 ```
 /config
-  config.js                 # Centralized config loader (.env)
+  config.js
 /controllers
-  flightRoutesController.js # Two endpoints: /flightRoutes and /flightRoutesWithHotels
+  flightRoutesController.js
 /middlewares
   correlationIdMiddleware.js
 /providers
-  index.js                  # Provider factory (dynamic injection)
-  amadeusProvider.js        # Current implementation with Amadeus
+  index.js
+  amadeusProvider.js
 /services
-  flightRoutesService.js    # Orchestration layer
+  flightRoutesService.js
 /utils
-  httpClient.js             # Reusable HTTP client with timeout
-  logger.js                 # Basic structured logger
+  httpClient.js
+  logger.js
 /swagger.json
 index.js
 .env
 package.json
 README.md
-```
-
----
-
-## How to run locally
-
-### Prerequisites
-- Node.js 16.x or newer
-- NPM
-
-### Installation
-
-```bash
-npm install
-```
-
-### Running the API
-
-```bash
-npm start
-```
-
-The API will be available at:
-
-```
-http://localhost:3000
-```
-
-Swagger API Docs:
-
-```
-http://localhost:3000/api-docs
 ```
 
 ---
@@ -99,61 +69,28 @@ http://localhost:3000/api-docs
 
 Fetches flight offers between origin and destination airports.
 
-**Query parameters**:
-- `origin` → origin airport code (IATA)
-- `destination` → destination airport code (IATA)
-- `departureDate` → departure date (YYYY-MM-DD)
-- `adults` → number of adult passengers
-
-**Example**:
-
-```bash
-curl 'https://aircanada-partner-integration.onrender.com/flightRoutes?origin=YYZ&destination=YVR&departureDate=2025-06-10&adults=1'
-```
-
----
-
 ### `GET /flightRoutesWithHotels`
 
 Fetches flight offers between origin and destination airports + hotel listings near destination.
 
-**Query parameters**:
-- Same as `/flightRoutes`.
+### `GET /health`
 
-**Example**:
-
-```bash
-curl 'https://aircanada-partner-integration.onrender.com/flightRoutesWithHotels?origin=YYZ&destination=YVR&departureDate=2025-06-10&adults=1'
-```
+Basic health check endpoint. Returns `{"status": "ok"}`.
 
 ---
 
-## Key Features
+## Production Readiness Features
 
-- **Modular provider architecture** → can easily add new providers in future (Sabre, etc.)
-- **Provider injected via config** → no hardcoding, clean separation of concerns
-- **Global error handling** → unhandledRejection, uncaughtException, and Express error middleware
-- **CorrelationId middleware** → each request is traced for better observability
-- **Swagger documentation** → exposed at `/api-docs` for easy testing and partner integration
-- **Reusable HTTP client** → timeout configurable
-- **Configuration fully externalized** → `.env` used for all keys, timeouts, etc.
-- **Live deployment with CI/CD** → Deployed to Render with auto-updates on GitHub push
+The API implements key production readiness patterns:
 
----
-
-## Final Notes
-
-The architecture was deliberately designed to be extensible and production-ready:
-- Clear layering between Controller / Service / Provider
-- Dynamic provider selection at runtime
-- No hardcoded secrets or constants
-- Easily testable, observable, maintainable
-- Deployed to public endpoint with CI/CD enabled
-
-This API can serve both Air Canada's internal systems and potential partner integrations as it evolves.
+- **Structured logging** → Winston-based → easy to parse in log systems
+- **/health endpoint** → for load balancer and monitoring checks
+- **Request timeout** → prevents hanging requests
+- **Rate limiting** → protects API from abuse (configurable via .env)
+- **Standardized error responses** → with correlationId for traceability
+- **Global process error handlers** → catch unhandled errors
+- **All config externalized** → no magic numbers in code
+- **Deployed with CI/CD on Render**
 
 ---
 
-## Author
-
-Rahul Somanathan

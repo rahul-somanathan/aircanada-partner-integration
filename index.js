@@ -7,6 +7,9 @@ const flightRoutesService = require('./services/flightRoutesService');
 const getProvider = require('./providers');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
+const logger = require('./utils/logger');
+const timeout = require('connect-timeout');
+const rateLimit = require('express-rate-limit');
 
 // Inject provider dynamically
 const flightProvider = getProvider(config.flightProviderName);
@@ -15,35 +18,53 @@ flightRoutesService.setFlightProvider(flightProvider);
 app.use(express.json());
 app.use(correlationIdMiddleware);
 
-// Routes
+// Apply rate limiter
+const limiter = rateLimit({
+  windowMs: config.rateLimitWindowMs,
+  max: config.rateLimitMaxRequests
+});
+app.use(limiter);
+
+// Apply request timeout
+app.use(timeout(`${config.requestTimeoutMs}ms`));
+
+// Health check endpoint
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+// API routes
 app.get('/flightRoutes', flightRoutesController.getFlightRoutes);
 app.get('/flightRoutesWithHotels', flightRoutesController.getFlightRoutesWithHotels);
 
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Global error middleware
+// Global error middleware → standardized error contract
 app.use((err, req, res, next) => {
-  console.error(`[${req?.correlationId || 'NO_CORRELATION_ID'}] Unhandled error:`, err);
+  const correlationId = req?.correlationId || 'NO_CORRELATION_ID';
+  logger.error(`[${correlationId}] Unhandled error: ${err.stack || err.message}`);
 
   res.status(500).json({
-    error: 'Internal server error',
-    message: err.message
+    error: {
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Something went wrong. Please try again later.',
+      correlationId
+    }
   });
 });
 
 // Global process error handling
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error(`Unhandled Rejection at: ${promise}, reason: ${reason}`);
 });
 
 process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  // Optionally: graceful shutdown
+  logger.error(`Uncaught Exception: ${err.stack || err.message}`);
+  // Optional: process.exit(1); in real prod you'd want graceful shutdown first
 });
 
+// Start server
 app.listen(config.port, () => {
-  console.log(`Server running at http://localhost:${config.port}`);
-  console.log(`Using flight provider: ${config.flightProviderName}`);
-  console.log(`API Docs available at: http://localhost:${config.port}/api-docs`);
+  logger.info(`Server running at http://localhost:${config.port}`);
+  logger.info(`Using flight provider: ${config.flightProviderName}`);
+  logger.info(`API Docs available at: http://localhost:${config.port}/api-docs`);
 });

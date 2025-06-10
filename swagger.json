@@ -3,7 +3,7 @@
   "info": {
     "title": "Air Canada Flight Routes API",
     "version": "1.0",
-    "description": "API to retrieve flight routes between two airports, with optional integrated hotels data."
+    "description": "API to retrieve flight routes between two airports, with optional integrated hotels data. Implements production best practices including health check, rate limiting, timeouts, and standardized error handling."
   },
   "paths": {
     "/flightRoutes": {
@@ -14,37 +14,28 @@
             "in": "query",
             "name": "origin",
             "required": true,
-            "schema": {
-              "type": "string"
-            },
+            "schema": { "type": "string" },
             "description": "Origin airport code (IATA format)"
           },
           {
             "in": "query",
             "name": "destination",
             "required": true,
-            "schema": {
-              "type": "string"
-            },
+            "schema": { "type": "string" },
             "description": "Destination airport code (IATA format)"
           },
           {
             "in": "query",
             "name": "departureDate",
             "required": true,
-            "schema": {
-              "type": "string",
-              "format": "date"
-            },
+            "schema": { "type": "string", "format": "date" },
             "description": "Departure date in YYYY-MM-DD format"
           },
           {
             "in": "query",
             "name": "adults",
             "required": true,
-            "schema": {
-              "type": "integer"
-            },
+            "schema": { "type": "integer" },
             "description": "Number of adult passengers"
           }
         ],
@@ -85,7 +76,9 @@
                 }
               }
             }
-          }
+          },
+          "429": { "description": "Too many requests - rate limit exceeded" },
+          "500": { "description": "Internal server error" }
         }
       }
     },
@@ -97,37 +90,28 @@
             "in": "query",
             "name": "origin",
             "required": true,
-            "schema": {
-              "type": "string"
-            },
+            "schema": { "type": "string" },
             "description": "Origin airport code (IATA format)"
           },
           {
             "in": "query",
             "name": "destination",
             "required": true,
-            "schema": {
-              "type": "string"
-            },
+            "schema": { "type": "string" },
             "description": "Destination airport code (IATA format)"
           },
           {
             "in": "query",
             "name": "departureDate",
             "required": true,
-            "schema": {
-              "type": "string",
-              "format": "date"
-            },
+            "schema": { "type": "string", "format": "date" },
             "description": "Departure date in YYYY-MM-DD format"
           },
           {
             "in": "query",
             "name": "adults",
             "required": true,
-            "schema": {
-              "type": "integer"
-            },
+            "schema": { "type": "integer" },
             "description": "Number of adult passengers"
           }
         ],
@@ -168,11 +152,31 @@
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "properties": {
-                          "name": { "type": "string" }
-                        }
+                        "properties": { "name": { "type": "string" } }
                       }
                     }
+                  }
+                }
+              }
+            }
+          },
+          "429": { "description": "Too many requests - rate limit exceeded" },
+          "500": { "description": "Internal server error" }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check endpoint",
+        "responses": {
+          "200": {
+            "description": "OK - API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" }
                   }
                 }
               }
