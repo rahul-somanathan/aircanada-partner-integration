@@ -10,6 +10,20 @@ The API is designed with clean separation of concerns and a flexible architectur
 
 ---
 
+## Live Deployment
+
+The API is live and available here:
+
+  Base URL: [https://aircanada-partner-integration.onrender.com](https://aircanada-partner-integration.onrender.com)
+
+### Endpoints
+
+- [`/flightRoutes`](https://aircanada-partner-integration.onrender.com/flightRoutes)
+- [`/flightRoutesWithHotels`](https://aircanada-partner-integration.onrender.com/flightRoutesWithHotels)
+- [`/api-docs`](https://aircanada-partner-integration.onrender.com/api-docs) → Swagger API documentation
+
+---
+
 ## Why this architecture?
 
 The goal was to implement an API that is:
@@ -17,6 +31,7 @@ The goal was to implement an API that is:
 - Secure and configurable (all config loaded from `.env`)
 - Observable and debuggable (correlation IDs, global error handling)
 - Maintainable and testable (layered architecture with clear roles)
+- Ready to deploy in production environments (deployed to Render with CI/CD)
 
 ---
 
@@ -93,7 +108,7 @@ Fetches flight offers between origin and destination airports.
 **Example**:
 
 ```bash
-curl 'http://localhost:3000/flightRoutes?origin=YYZ&destination=YVR&departureDate=2025-06-10&adults=1'
+curl 'https://aircanada-partner-integration.onrender.com/flightRoutes?origin=YYZ&destination=YVR&departureDate=2025-06-10&adults=1'
 ```
 
 ---
@@ -108,7 +123,7 @@ Fetches flight offers between origin and destination airports + hotel listings n
 **Example**:
 
 ```bash
-curl 'http://localhost:3000/flightRoutesWithHotels?origin=YYZ&destination=YVR&departureDate=2025-06-10&adults=1'
+curl 'https://aircanada-partner-integration.onrender.com/flightRoutesWithHotels?origin=YYZ&destination=YVR&departureDate=2025-06-10&adults=1'
 ```
 
 ---
@@ -122,6 +137,7 @@ curl 'http://localhost:3000/flightRoutesWithHotels?origin=YYZ&destination=YVR&de
 - **Swagger documentation** → exposed at `/api-docs` for easy testing and partner integration
 - **Reusable HTTP client** → timeout configurable
 - **Configuration fully externalized** → `.env` used for all keys, timeouts, etc.
+- **Live deployment with CI/CD** → Deployed to Render with auto-updates on GitHub push
 
 ---
 
@@ -132,6 +148,7 @@ The architecture was deliberately designed to be extensible and production-ready
 - Dynamic provider selection at runtime
 - No hardcoded secrets or constants
 - Easily testable, observable, maintainable
+- Deployed to public endpoint with CI/CD enabled
 
 This API can serve both Air Canada's internal systems and potential partner integrations as it evolves.
 
