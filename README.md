@@ -94,3 +94,18 @@ The API implements key production readiness patterns:
 
 ---
 
+## Environment Variables
+
+Create a `.env` file in the project root with the following structure:
+
+```env
+FLIGHT_PROVIDER=amadeus
+PORT=3000
+AMADEUS_CLIENT_ID=your-amadeus-client-id
+AMADEUS_CLIENT_SECRET=your-amadeus-client-secret
+AMADEUS_BASE_URL=https://test.api.amadeus.com
+HTTP_TIMEOUT=5000
+RATE_LIMIT_WINDOW_MS=60000
+RATE_LIMIT_MAX_REQUESTS=100
+LOG_LEVEL=info
+REQUEST_TIMEOUT_MS=10000
