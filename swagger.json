@@ -1,0 +1,185 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Air Canada Flight Routes API",
+    "version": "1.0",
+    "description": "API to retrieve flight routes between two airports, with optional integrated hotels data."
+  },
+  "paths": {
+    "/flightRoutes": {
+      "get": {
+        "summary": "Retrieve flight routes between two airports",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "origin",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Origin airport code (IATA format)"
+          },
+          {
+            "in": "query",
+            "name": "destination",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Destination airport code (IATA format)"
+          },
+          {
+            "in": "query",
+            "name": "departureDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Departure date in YYYY-MM-DD format"
+          },
+          {
+            "in": "query",
+            "name": "adults",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Number of adult passengers"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with flight routes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "origin": { "type": "string" },
+                    "destination": { "type": "string" },
+                    "departureDate": { "type": "string" },
+                    "routes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "totalPrice": { "type": "number" },
+                          "currency": { "type": "string" },
+                          "flights": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "airline": { "type": "string" },
+                                "flightNumber": { "type": "string" },
+                                "scheduledDepartureTime": { "type": "string" },
+                                "scheduledArrivalTime": { "type": "string" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/flightRoutesWithHotels": {
+      "get": {
+        "summary": "Retrieve flight routes between two airports with integrated hotels data",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "origin",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Origin airport code (IATA format)"
+          },
+          {
+            "in": "query",
+            "name": "destination",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Destination airport code (IATA format)"
+          },
+          {
+            "in": "query",
+            "name": "departureDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Departure date in YYYY-MM-DD format"
+          },
+          {
+            "in": "query",
+            "name": "adults",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Number of adult passengers"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with flight routes and hotels data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "origin": { "type": "string" },
+                    "destination": { "type": "string" },
+                    "departureDate": { "type": "string" },
+                    "routes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "totalPrice": { "type": "number" },
+                          "currency": { "type": "string" },
+                          "flights": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "airline": { "type": "string" },
+                                "flightNumber": { "type": "string" },
+                                "scheduledDepartureTime": { "type": "string" },
+                                "scheduledArrivalTime": { "type": "string" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "hotels": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
