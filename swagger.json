@@ -1,41 +1,52 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Air Canada Flight Routes API",
+    "title": "Air Canada Partner Integration API",
     "version": "1.0",
-    "description": "API to retrieve flight routes between two airports, with optional integrated hotels data. Implements production best practices including health check, rate limiting, timeouts, and standardized error handling."
+    "description": "Partner-facing API to retrieve flight routes and optional integrated hotels data. Includes production best practices such as health check, rate limiting, timeouts, and standardized error handling."
   },
+  "tags": [
+    {
+      "name": "Flight Routes API",
+      "description": "Endpoints to retrieve flight routes and hotels data"
+    },
+    {
+      "name": "System",
+      "description": "System and monitoring endpoints"
+    }
+  ],
   "paths": {
     "/flightRoutes": {
       "get": {
+        "tags": ["Flight Routes API"],
         "summary": "Retrieve flight routes between two airports",
         "parameters": [
           {
             "in": "query",
             "name": "origin",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": { "type": "string", "example": "YYZ" },
             "description": "Origin airport code (IATA format)"
           },
           {
             "in": "query",
             "name": "destination",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": { "type": "string", "example": "YVR" },
             "description": "Destination airport code (IATA format)"
           },
           {
             "in": "query",
             "name": "departureDate",
             "required": true,
-            "schema": { "type": "string", "format": "date" },
+            "schema": { "type": "string", "format": "date", "example": "2025-07-20" },
             "description": "Departure date in YYYY-MM-DD format"
           },
           {
             "in": "query",
             "name": "adults",
             "required": true,
-            "schema": { "type": "integer" },
+            "schema": { "type": "integer", "example": 1 },
             "description": "Number of adult passengers"
           }
         ],
@@ -77,6 +88,7 @@
               }
             }
           },
+          "400": { "description": "Bad Request - missing or invalid parameters" },
           "429": { "description": "Too many requests - rate limit exceeded" },
           "500": { "description": "Internal server error" }
         }
@@ -84,34 +96,35 @@
     },
     "/flightRoutesWithHotels": {
       "get": {
+        "tags": ["Flight Routes API"],
         "summary": "Retrieve flight routes between two airports with integrated hotels data",
         "parameters": [
           {
             "in": "query",
             "name": "origin",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": { "type": "string", "example": "YYZ" },
             "description": "Origin airport code (IATA format)"
           },
           {
             "in": "query",
             "name": "destination",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": { "type": "string", "example": "YVR" },
             "description": "Destination airport code (IATA format)"
           },
           {
             "in": "query",
             "name": "departureDate",
             "required": true,
-            "schema": { "type": "string", "format": "date" },
+            "schema": { "type": "string", "format": "date", "example": "2025-07-20" },
             "description": "Departure date in YYYY-MM-DD format"
           },
           {
             "in": "query",
             "name": "adults",
             "required": true,
-            "schema": { "type": "integer" },
+            "schema": { "type": "integer", "example": 1 },
             "description": "Number of adult passengers"
           }
         ],
@@ -152,7 +165,9 @@
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "properties": { "name": { "type": "string" } }
+                        "properties": {
+                          "name": { "type": "string" }
+                        }
                       }
                     }
                   }
@@ -160,6 +175,7 @@
               }
             }
           },
+          "400": { "description": "Bad Request - missing or invalid parameters" },
           "429": { "description": "Too many requests - rate limit exceeded" },
           "500": { "description": "Internal server error" }
         }
@@ -167,6 +183,7 @@
     },
     "/health": {
       "get": {
+        "tags": ["System"],
         "summary": "Health check endpoint",
         "responses": {
           "200": {
@@ -176,7 +193,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": { "type": "string" }
+                    "status": { "type": "string", "example": "ok" }
                   }
                 }
               }
